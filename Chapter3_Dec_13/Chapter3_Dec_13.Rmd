@@ -1,0 +1,236 @@
+---
+title: "Chapter3_Dec_13"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#problems
+1. Describe the null hypotheses to which the p-values given in Table 3.4
+correspond. Explain what conclusions you can draw based on these
+p-values. Your explanation should be phrased in terms of sales, TV,
+radio, and newspaper, rather than in terms of the coefficients of the
+linear model.
+In Table 3.4, the null hypothesis for "TV" is that in the presence of radio
+ads and newspaper ads, TV ads have no effect on sales. Similarly, the null
+hypothesis for "radio" is that in the presence of TV and newspaper ads, radio
+ads have no effect on sales. And there is a similar null hypothesis for
+"newspaper". 
+The low p-values of TV and radio suggest that the null hypotheses
+are false for TV and radio. The high p-value of newspaper suggests that the null
+hypothesis is true for newspaper
+
+9. This question involves the use of multiple linear regression on the
+Auto data set.
+
+(a) Produce a scatterplot matrix which includes all of the variables
+in the data set.
+```{r}
+library (MASS)
+library (ISLR)
+data(Auto)
+pairs(Auto)
+```
+
+(b) Compute the matrix of correlations between the variables using
+the function cor(). You will need to exclude the name variable,
+cor()
+which is qualitative.
+
+```{r}
+cor(subset(Auto, select=-name))
+```
+
+(c) Use the lm() function to perform a multiple linear regression
+with mpg as the response and all other variables except name as
+the predictors. Use the summary() function to print the results.
+Comment on the output. For instance:
+
+```{r}
+lm.fit = lm(mpg~.-name, data=Auto)
+summary(lm.fit)
+```
+
+i. Is there a relationship between the predictors and the response?
+
+Yes, there is a relatioship between the predictors and the response by testing the null hypothesis of all the regression coefficients are zero. The F-test is far from 1 (with a small p-value) is evidence for false null hypothesis. 
+
+ii. Which predictors appear to have a statistically significant
+relationship to the response?
+
+Looking at the p-values associated with each predictor's t-statistic, we see that displacement, weight, year, and origin have a statistically significant relationship, while cylinders, horsepower, and acceleration do not.
+
+iii. What does the coefficient for the year variable suggest?
+
+The regression coefficient for year, r coefficients(lm.fit)["year"], suggests that for every one year, mpg increases by the coefficient.cars become more fuel efficient every year by almost 1 mpg / year
+
+10. This question should be answered using the Carseats data set.
+
+(a) Fit a multiple regression model to predict Sales using Price,
+Urban, and US.
+
+```{r}
+library(ISLR)
+summary(Carseats)
+attach(Carseats)
+lm.fit1 = lm(Sales~Price+Urban+US)
+summary(lm.fit1)
+```
+
+(b) Provide an interpretation of each coefficient in the model. Be
+careful—some of the variables in the model are qualitative!
+
+Price: The linear regression suggests a relationship between price and sales given the low p-value of the t-statistic. The coefficient states a negative relationship between Price and 
+Sales: as Price increases, Sales decreases.
+
+UrbanYes: The linear regression suggests that there isn't a relationship between the location of the store and the number of sales based on the high p-value of the t-statistic.
+
+USYes:The linear regression suggests there is a relationship between whether the store is in the US or not and the amount of sales. The coefficient states a positive relationship between USYes and Sales: if the store is in the US, the sales will increase by approximately 1201 units.
+
+(c) Write out the model in equation form, being careful to handle
+the qualitative variables properly.
+
+Sales = 13.04 + -0.05 Price + -0.02 UrbanYes + 1.20 USYes
+
+(d) For which of the predictors can you reject the null hypothesis
+H0 : βj = 0?
+
+Price and USYes, based on the p-values, F-statistic, and p-value of the F-statistic.
+
+(e) On the basis of your response to the previous question, fit a smaller model that only uses the predictors for which there is evidence of association with the outcome.
+
+```{r}
+lm.fit2 = lm(Sales ~ Price + US)
+summary(lm.fit2)
+```
+
+(f) How well do the models in (a) and (e) fit the data?
+
+Based on the RSE and R^2 of the linear regressions, (e) fitting the data slightly better.
+
+(g) Using the model from (e), obtain 95% confidence intervals for
+the coefficient(s).
+
+```{r}
+confint(lm.fit2)
+```
+
+15. This problem involves the Boston data set, which we saw in the lab
+for this chapter. We will now try to predict per capita crime rate
+using the other variables in this data set. In other words, per capita
+crime rate is the response, and the other variables are the predictors.
+
+(a) For each predictor, fit a simple linear regression model to predict
+the response. Describe your results. In which of the models is
+there a statistically significant association between the predictor
+and the response? Create some plots to back up your assertions.
+
+```{r}
+library(MASS)
+summary(Boston)
+Boston$chas <- factor(Boston$chas, labels = c("N","Y"))
+summary(Boston)
+attach(Boston)
+lm.zn = lm(crim~zn)
+summary(lm.zn) # yes
+lm.indus = lm(crim~indus)
+summary(lm.indus) # yes
+lm.chas = lm(crim~chas) 
+summary(lm.chas) # no
+lm.nox = lm(crim~nox)
+summary(lm.nox) # yes
+lm.rm = lm(crim~rm)
+summary(lm.rm) # yes
+lm.age = lm(crim~age)
+summary(lm.age) # yes
+lm.dis = lm(crim~dis)
+summary(lm.dis) # yes
+lm.rad = lm(crim~rad)
+summary(lm.rad) # yes
+lm.tax = lm(crim~tax)
+summary(lm.tax) # yes
+lm.ptratio = lm(crim~ptratio)
+summary(lm.ptratio) # yes
+lm.black = lm(crim~black)
+summary(lm.black) # yes
+lm.lstat = lm(crim~lstat)
+summary(lm.lstat) # yes
+lm.medv = lm(crim~medv)
+summary(lm.medv) # yes
+```
+
+(b) Fit a multiple regression model to predict the response using
+all of the predictors. Describe your results. For which predictors
+can we reject the null hypothesis H0 : βj = 0?
+
+```{r}
+lm.fit.all = lm(crim~., data=Boston)
+summary(lm.fit.all)
+#reject the null hypothesis for zn, dis, rad, black, medv
+```
+
+(c) How do your results from (a) compare to your results from (b)?
+Create a plot displaying the univariate regression coefficients
+from (a) on the x-axis, and the multiple regression coefficients
+from (b) on the y-axis. That is, each predictor is displayed as a
+single point in the plot. Its coefficient in a simple linear regression
+model is shown on the x-axis, and its coefficient estimate
+in the multiple linear regression model is shown on the y-axis.
+
+```{r}
+x = c(coefficients(lm.zn)[2],
+      coefficients(lm.indus)[2],
+      coefficients(lm.chas)[2],
+      coefficients(lm.nox)[2],
+      coefficients(lm.rm)[2],
+      coefficients(lm.age)[2],
+      coefficients(lm.dis)[2],
+      coefficients(lm.rad)[2],
+      coefficients(lm.tax)[2],
+      coefficients(lm.ptratio)[2],
+      coefficients(lm.black)[2],
+      coefficients(lm.lstat)[2],
+      coefficients(lm.medv)[2])
+y = coefficients(lm.fit.all)[2:14]
+plot(x, y)
+
+#Coefficient for nox is approximately -10 in univariate model and 31 in multiple regression model.
+```
+
+(d) Is there evidence of non-linear association between any of the
+predictors and the response? To answer this question, for each
+predictor X, fit a model of the form
+Y = β0 + β1X + β2X2 + β3X3 + e.
+
+```{r}
+lm.zn = lm(crim~poly(zn,3))
+summary(lm.zn) 
+lm.indus = lm(crim~poly(indus,3))
+summary(lm.indus)
+# lm.chas = lm(crim~poly(chas,3)) : qualitative predictor
+lm.nox = lm(crim~poly(nox,3))
+summary(lm.nox) 
+lm.rm = lm(crim~poly(rm,3))
+summary(lm.rm) 
+lm.age = lm(crim~poly(age,3))
+summary(lm.age) 
+lm.dis = lm(crim~poly(dis,3))
+summary(lm.dis)
+lm.rad = lm(crim~poly(rad,3))
+summary(lm.rad) 
+lm.tax = lm(crim~poly(tax,3))
+summary(lm.tax)
+lm.ptratio = lm(crim~poly(ptratio,3))
+summary(lm.ptratio) 
+lm.black = lm(crim~poly(black,3))
+summary(lm.black) 
+lm.lstat = lm(crim~poly(lstat,3))
+summary(lm.lstat) 
+lm.medv = lm(crim~poly(medv,3))
+summary(lm.medv) 
+#yes for most, except for black and chas.
+```
+
