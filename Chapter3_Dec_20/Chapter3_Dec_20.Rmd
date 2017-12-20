@@ -1,0 +1,139 @@
+---
+title: "Chapter3_Dec_20"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#problem
+
+2. Carefully explain the differences between the KNN classifier and KNN
+regression methods.
+
+The result of KNN classifier is the classification output for Y (qualitative), while ther output for a KNN regression predicts the
+quantitative value for f(X). both related in formula.
+
+3.Suppose we have a data set with five predictors, X1 =GPA, X2 = IQ,
+X3 = Gender (1 for Female and 0 for Male), X4 = Interaction between
+GPA and IQ, and X5 = Interaction between GPA and Gender. The
+response is starting salary after graduation (in thousands of dollars).
+Suppose we use least squares to fit the model, and get ˆβ0 = 50, ˆβ1 =
+20, ˆβ2 = 0.07, ˆβ3 = 35, ˆβ4 = 0.01, ˆβ5 = −10.
+(a) Which answer is correct, and why?
+i. For a fixed value of IQ and GPA, males earn more on average
+than females.
+ 
+ii. For a fixed value of IQ and GPA, females earn more on
+average than males.
+iii. For a fixed value of IQ and GPA, males earn more on average
+than females provided that the GPA is high enough.
+iv. For a fixed value of IQ and GPA, females earn more on
+average than males provided that the GPA is high enough.
+
+answer:
+Y = 50 + 20(gpa) + 0.07(iq) + 35(gender) + 0.01(gpa * iq) - 10 (gpa * gender)
+suppose : gpa l1 iq l2
+(a) Y = 50 + 20 l1 + 0.07 l2 + 35 gender + 0.01(l1 * l2) - 10 (l1 * gender)
+male: (gender = 0)   50 + 20 l1 + 0.07 l2 + 0.01(l1 * l2)
+female: (gender = 1) 50 + 20 l1 + 0.07 l2 + 35 + 0.01(l1 * l2) - 10 (l1)
+
+iii. Once the GPA is high enough, males earn more on average.
+
+(b) Predict the salary of a female with IQ of 110 and a GPA of 4.0.
+
+answer:
+(b) Y(Gender = 1, IQ = 110, GPA = 4.0)
+= 50 + 20 * 4 + 0.07 * 110 + 35 + 0.01 (4 * 110) - 10 * 4
+= 137.1
+
+(c) True or false: Since the coefficient for the GPA/IQ interaction
+term is very small, there is very little evidence of an interaction
+effect. Justify your answer.
+
+answer:
+(c) False. We must examine the p-value of the regression coefficient to
+understand whether the interaction term is statistically significant or not.
+
+9. This question involves the use of multiple linear regression on the
+Auto data set
+
+(d) Use the plot() function to produce diagnostic plots of the linear
+regression fit. Comment on any problems you see with the fit.
+Do the residual plots suggest any unusually large outliers? Does
+the leverage plot identify any observations with unusually high
+leverage?
+
+```{r}
+library (MASS)
+library (ISLR)
+data(Auto)
+lm.fit1 = lm(mpg~.-name, data=Auto)
+summary(lm.fit1)
+par(mfrow=c(2,2))
+plot(lm.fit1)
+
+#The fit does not appear to be accurate because there is an obvious curve pattern to the residuals plots. From the leverage plot, point 14 appears to have high leverage, without a high magnitude residual.
+
+plot(predict(lm.fit1), rstudent(lm.fit1))
+
+#There are possible outliers regarding  plot of studentized residuals because there are data with a value greater than 3.
+```
+
+(e) Use the * and : symbols to fit linear regression models with
+interaction effects. Do any interactions appear to be statistically
+significant?
+
+```{r}
+lm.fit2 = lm(mpg~cylinders*displacement+displacement*weight, data = Auto)
+summary(lm.fit2)
+
+#picked two highest correlation pairs from correlation matrix.From the p-values, we can see that the interaction between displacement and weight is statistically signifcant, while the interactiion between cylinders and displacement is not.
+```
+
+(f) Try a few different transformations of the variables, such as
+log(X),√X, X2. Comment on your findings.
+
+```{r}
+lm.fit3 = lm(mpg~log(weight)+sqrt(horsepower)+acceleration+I(acceleration^2), data = Auto)
+summary(lm.fit3)
+par(mfrow=c(2,2))
+plot(lm.fit3)
+plot(predict(lm.fit3), rstudent(lm.fit3))
+
+#from the p-values, the log(weight), sqrt(horsepower), and acceleration^2 all have statistical significance. The residuals plot has less of a obvious pattern than the plot of all linear regression terms. The studentized residuals displays potential outliers (>3). The leverage plot indicates more than three points with high leverage.
+#The Q-Q plot indicates somewhat unnormality of the residuals. So, a better transformation need to be applied to our model.So in the next attempt, we use log(mpg) as our response variable.
+
+
+lm.fit2<-lm(log(mpg)~cylinders+displacement+horsepower+weight+acceleration+year+origin,data=Auto)
+summary(lm.fit2)
+par(mfrow=c(2,2)) 
+plot(lm.fit2)
+plot(predict(lm.fit2),rstudent(lm.fit2))
+
+#The outputs show that log transform of mpg yield better model fitting regarding better R^2, normality of residuals).
+```
+
+10. This question should be answered using the Carseats data set.
+(h) Is there evidence of outliers or high leverage observations in the
+model from (e)?
+
+```{r}
+library(ISLR)
+summary(Carseats)
+lm.fit2 = lm(Sales ~ Price + US, data = Carseats)
+summary(lm.fit2)
+plot(predict(lm.fit2), rstudent(lm.fit2))
+
+#All studentized residuals appear to be bounded by -3 to 3, so not outliers 
+
+par(mfrow=c(2,2))
+plot(lm.fit2)
+
+#There are a few observations that greatly exceed $(p+1)/n$ (r 3/397) on the leverage-statistic plot that suggest that the corresponding points have high leverage.
+```
+
+
