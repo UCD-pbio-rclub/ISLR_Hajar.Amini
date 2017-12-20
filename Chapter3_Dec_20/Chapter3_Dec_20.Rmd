@@ -132,7 +132,6 @@ plot(predict(lm.fit2), rstudent(lm.fit2))
 
 par(mfrow=c(2,2))
 plot(lm.fit2)
-
 #There are a few observations that greatly exceed $(p+1)/n$ (r 3/397) on the leverage-statistic plot that suggest that the corresponding points have high leverage.
 ```
 
