@@ -7,6 +7,8 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(markdown)
 ```
 #problems
 1. Describe the null hypotheses to which the p-values given in Table 3.4
