@@ -1,0 +1,2 @@
+"0","#The fit does not appear to be accurate because there is an obvious curve pattern to the residuals plots. From the leverage plot, point 14 appears to have high leverage, without a high magnitude residual."
+"0","plot(predict(lm.fit1), rstudent(lm.fit1))"
