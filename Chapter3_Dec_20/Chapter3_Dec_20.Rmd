@@ -8,13 +8,66 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+#3.6.3 Multiple Linear Regression
+
+```{r}
+library (MASS)
+library (ISLR)
+lm.fit <- lm(data = Boston, medv~lstat+age)
+summary(lm.fit)
+```
+#for see all variables
+
+```{r}
+lm.fit <- lm(medv~. , data=Boston)
+summary(lm.fit)
+summary(lm.fit)$r.sq
+#summary(lm.fit)$sigma gives us the RSE
+summary(lm.fit)$sigma
+```
+
+```{r}
+#install.packages("car")
+library (car)
+vif(lm.fit)
+#all variables except age
+
+lm.fit1=lm(medv~.-age, data = Boston)
+summary (lm.fit1)
+lm.fit1=update(lm.fit, ~. -age)
+```
+
+#3.6.4 Interaction Terms
+
+#3.6.5 Non-linear Transformations of the Predictors
+
+```{r}
+lm.fit2=lm(medv~lstat +I(lstat^2), data = Boston)
+summary(lm.fit2)
+lm.fit=lm(medv~lstat, data=Boston)
+anova(lm.fit ,lm.fit2) #we can see the lm.fit2 fitted better based on F test
+par(mfrow=c(2,2))
+plot(lm.fit2)
+
+#for checking the polynominal
+lm.fit5=lm(medv~ poly(lstat, 5), data = Boston) #fifth order fitted better
+summary(lm.fit5)
+summary(lm(medv~log(rm), data = Boston))
+```
+
+#3.6.6 Qualitative Predictors
+
+```{r}
+fix( Carseats )
+names(Carseats )
+```
 
 #problem
 
 2. Carefully explain the differences between the KNN classifier and KNN
 regression methods.
 
-The result of KNN classifier is the classification output for Y (qualitative), while ther output for a KNN regression predicts the
+The result of KNN classifier is the classification output for Y (qualitative), while other output for a KNN regression predicts the
 quantitative value for f(X). both related in formula.
 
 3.Suppose we have a data set with five predictors, X1 =GPA, X2 = IQ,
@@ -135,4 +188,96 @@ plot(lm.fit2)
 #There are a few observations that greatly exceed $(p+1)/n$ (r 3/397) on the leverage-statistic plot that suggest that the corresponding points have high leverage.
 ```
 
+14. This problem focuses on the collinearity problem.
+(a) Perform the following commands in R:
+The last line corresponds to creating a linear model in which y is
+a function of x1 and x2. Write out the form of the linear model.
+What are the regression coefficients?
 
+```{r}
+set.seed (1)
+x1=runif (100)
+x2 =0.5* x1+rnorm (100) /10
+y=2+2* x1 +0.3* x2+rnorm (100)
+#Y = 2 + 2 X_1 + 0.3 X_2 + \epsilon beta_0 = 2, beta_1 = 2, beta_2 = 0.3 
+```
+
+(b) What is the correlation between x1 and x2? Create a scatterplot
+displaying the relationship between the variables.
+
+```{r}
+cor(x1, x2)
+plot(x1, x2)
+```
+
+(c) Using this data, fit a least squares regression to predict y using
+x1 and x2. Describe the results obtained. What are ˆ β0, ˆ β1, and
+ˆ β2? How do these relate to the true β0, β1, and β2? Can you
+reject the null hypothesis H0 : β1 = 0? How about the null
+hypothesis H0 : β2 = 0?
+
+```{r}
+lm.fit = lm(y~x1+x2)
+summary(lm.fit)
+#beta_0 = 2.1305 , beta_1 = 1.4396, beta_2 = 1.0097
+# We can reject the null hypothesis for beta_1 because its p-value is below 5%. We cannot reject the null hypothesis for beta_2 because its p-value is much above the 5%
+```
+(d) Now fit a least squares regression to predict y using only x1.
+Comment on your results. Can you reject the null hypothesis
+H0 : β1 = 0?
+
+```{r}
+lm.fit = lm(y~x1)
+summary(lm.fit)
+#Yes, we can reject the null hypothesis for the regression coefficient given the p-value for its t-statistic is near zero.
+```
+
+(e) Now fit a least squares regression to predict y using only x2.
+Comment on your results. Can you reject the null hypothesis
+H0 : β1 = 0?
+
+```{r}
+lm.fit = lm(y~x2)
+summary(lm.fit)
+#Yes, we can reject the null hypothesis for the regression coefficient given the p-value for its t-statistic is near zero.
+```
+(f) Do the results obtained in (c)–(e) contradict each other? Explain
+your answer.
+
+No, because x1 and x2 have collinearity, it is hard to distinguish their effects when regressed upon together.
+
+(g) Now suppose we obtain one additional observation, which was
+unfortunately mismeasured.
+Re-fit the linear models from (c) to (e) using this new data. What
+effect does this new observation have on the each of the models?
+In each model, is this observation an outlier? A high-leverage
+point? Both? Explain your answers.
+
+```{r}
+x1=c(x1 , 0.1)
+x2=c(x2 , 0.8)
+y=c(y,6)
+
+lm.fit1 = lm(y~x1+x2)
+summary(lm.fit1)
+lm.fit2 = lm(y~x1)
+summary(lm.fit2)
+lm.fit3 = lm(y~x2)
+summary(lm.fit3)
+
+#In the first model, it shifts x1 to statistically insignificance and shifts x2 to statistiscal significance from the change in p-values between the two linear regressions.
+
+par(mfrow=c(2,2))
+plot(lm.fit1)
+par(mfrow=c(2,2))
+plot(lm.fit2)
+par(mfrow=c(2,2))
+plot(lm.fit3)
+#In the first and third models, the point becomes a high leverage point.
+
+plot(predict(lm.fit1), rstudent(lm.fit1))
+plot(predict(lm.fit2), rstudent(lm.fit2))
+plot(predict(lm.fit3), rstudent(lm.fit3))
+
+#Looking at the studentized residuals, we don't observe points too far from the 3 value cutoff, except for the second linear regression: y ~ x1.
+```
