@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1515026865604.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "DB21E15A",
+    "lastKnownWriteTime" : 4615481968,
+    "last_content_update" : 1515026865604,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "F5AD1530",
+        "caption" : "datExprA1",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=datExprA1&cache_key=F5AD1530",
+        "displayedObservations" : 21696,
+        "environment" : "",
+        "object" : "datExprA1",
+        "preview" : 0,
+        "totalObservations" : 21696,
+        "variables" : 32
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}
