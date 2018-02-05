@@ -99,4 +99,261 @@ cv.error.10
 #[1] 24.21 19.19 19.31 19.34 18.88 19.02 18.90 19.71 18.95 19.50
 ```
 
+#Problems
+3. We now review k-fold cross-validation.
+(a) Explain how k-fold cross-validation is implemented.
+k-fold cross-validation is implemented by taking the set of n observations and randomly splitting into k non-overlapping groups. Each of these groups acts as a validation set and the remainder as a training set. The test error is estimated by averaging the k resulting MSE estimates.
+(b) What are the advantages and disadvantages of k-fold crossvalidation
+relative to:
+i. The validation set approach?
+ii. LOOCV?
+i. The validation set approach is conceptually simple and easily. the observation can simply partitioning the existing training data into two sets. However, there are two drawbacks: (1.) the estimate of the test error rate can be highly variable depending on which observations are included in the training and validation sets. (2.) the validation set error rate may tend to overestimate the test error rate for the model fit on the entire data set.
+
+ii. LOOCV is a special case of k-fold cross-validation with k = n. Thus, LOOCV is the most computationally intense method since the model must be fit n times. Also, LOOCV has higher variance, but lower bias, than k-fold CV.
+
+5. In Chapter 4, we used logistic regression to predict the probability of
+default using income and balance on the Default data set. We will
+now estimate the test error of this logistic regression model using the
+validation set approach. Do not forget to set a random seed before
+beginning your analysis.
+
+(a) Fit a logistic regression model that uses income and balance to
+predict default.
+
+```{r}
+library(ISLR)
+summary(Default)
+attach(Default)
+set.seed(1)
+glm.fit = glm(default~income+balance, data=Default, family=binomial)
+```
+
+(b) Using the validation set approach, estimate the test error of this
+model. In order to do this, you must perform the following steps:
+i. Split the sample set into a training set and a validation set.
+ii. Fit a multiple logistic regression model using only the training
+observations.
+iii. Obtain a prediction of default status for each individual in
+the validation set by computing the posterior probability of
+default for that individual, and classifying the individual to
+the default category if the posterior probability is greater
+than 0.5.
+iv. Compute the validation set error, which is the fraction of
+the observations in the validation set that are misclassified.
+
+```{r}
+x = function() {
+# i.Split the sample set into a training set and a validation set
+train = sample(dim(Default)[1], dim(Default)[1]/2)
+# ii.Fit a multiple logistic regression model using only the training observations.
+glm.fit = glm(default~income+balance, data=Default, family=binomial,
+              subset=train)
+# iii.posterior probability
+glm.pred = rep("No", dim(Default)[1]/2)
+glm.probs = predict(glm.fit, Default[-train,], type="response")
+glm.pred[glm.probs>.5] = "Yes"
+# iv.validation
+return(mean(glm.pred != Default[-train,]$default))
+}
+x()
+#0.0286
+#2.86% test error rate from validation set approach.
+```
+
+(c) Repeat the process in (b) three times, using three different splits
+of the observations into a training set and a validation set. Comment
+on the results obtained.
+
+```{r}
+x() #0.0236
+x() #0.028
+x() #0.0268
+#seems to average around 2.6% test error rate.
+```
+
+(d) Now consider a logistic regression model that predicts the probability
+of default using income, balance, and a dummy variable
+for student. Estimate the test error for this model using the validation
+set approach. Comment on whether or not including a
+dummy variable for student leads to a reduction in the test error
+rate.
+
+```{r}
+train = sample(dim(Default)[1], dim(Default)[1]/2)
+glm.fit = glm(default~income+balance+student, data=Default, family=binomial,subset=train)
+glm.pred = rep("No", dim(Default)[1]/2)
+glm.probs = predict(glm.fit, Default[-train,], type="response")
+glm.pred[glm.probs>.5] = "Yes"
+mean(glm.pred != Default[-train,]$default)
+#2.64% test error rate, with student dummy variable. Using the validation set approach, it doesn't appear adding the student dummy variable leads to a reduction in the test error rate.
+```
+
+7. In Sections 5.3.2 and 5.3.3, we saw that the cv.glm() function can be
+used in order to compute the LOOCV test error estimate. Alternatively,
+one could compute those quantities using just the glm() and predict.glm() functions, and a for loop. You will now take this approach
+in order to compute the LOOCV error for a simple logistic
+regression model on the Weekly data set. Recall that in the context
+of classification problems, the LOOCV error is given in (5.4).
+
+(a) Fit a logistic regressionmodel that predicts Direction using Lag1
+and Lag2.
+
+```{r}
+library(ISLR)
+summary(Weekly)
+set.seed(1)
+attach(Weekly)
+glm.fit = glm(Direction~Lag1+Lag2, data=Weekly, family=binomial)
+summary(glm.fit)
+```
+
+(b) Fit a logistic regressionmodel that predicts Direction using Lag1
+and Lag2 using all but the first observation.
+
+```{r}
+glm.fit = glm(Direction~Lag1+Lag2, data=Weekly[-1,], family=binomial)
+summary(glm.fit)
+```
+
+(c) Use the model from (b) to predict the direction of the first observation.
+You can do this by predicting that the first observation
+will go up if P(Direction="Up"|Lag1, Lag2) > 0.5. Was this observation
+correctly classified?
+
+```{r}
+predict.glm(glm.fit, Weekly[1,], type="response") > 0.5
+#TRUE
+#Prediction was Up, true Direction was Down.
+```
+
+(d) Write a for loop from i = 1 to i = n, where n is the number of
+observations in the data set, that performs each of the following
+steps:
+
+i. Fit a logistic regression model using all but the ith observation
+to predict Direction using Lag1 and Lag2.
+ii. Compute the posterior probability of the market moving up
+for the ith observation.
+iii. Use the posterior probability for the ith observation in order
+to predict whether or not the market moves up.
+iv. Determine whether or not an error was made in predicting
+the direction for the ith observation. If an error was made,
+then indicate this as a 1, and otherwise indicate it as a 0.
+
+```{r}
+y = rep(0, dim(Weekly)[1])
+for (i in 1:(dim(Weekly)[1])) {
+   glm.fit = glm(Direction~Lag1+Lag2, data=Weekly[-i,], family=binomial)
+   is_up = predict.glm(glm.fit, Weekly[i,], type="response") > 0.5
+   is_true_up = Weekly[i,]$Direction == "Up"
+   if (is_up != is_true_up)
+     y[i] = 1
+}
+sum(y)
+#490 errors.
+```
+
+(e) Take the average of the n numbers obtained in (d)iv in order to
+obtain the LOOCV estimate for the test error. Comment on the
+results.
+
+```{r}
+mean(y)
+#[1] 0.4499541
+#LOOCV estimates a test error rate of ~45%.
+```
+
+8.We will now perform cross-validation on a simulated data set.
+(a) Generate a simulated data set as follows:
+
+```{r}
+set.seed (1)
+x=rnorm (100)
+y=x-2* x^2+ rnorm (100)
+```
+In this data set, what is n and what is p? Write out the model
+used to generate the data in equation form.
+
+n = 100, p = 2.
+Y = X - 2 X^2 + e
+
+(b) Create a scatterplot of X against Y . Comment on what you find.
+
+```{r}
+plot(x,y)
+#Quadratic plot. x from about -2 to 2. y from about -8 to 2.
+```
+
+(c) Set a random seed, and then compute the LOOCV errors that
+result from fitting the following four models using least squares:
+
+i. Y = β0 + β1X + e
+ii. Y = β0 + β1X + β2X2 + e
+iii. Y = β0 + β1X + β2X2 + β3X3 + e
+iv. Y = β0 + β1X + β2X2 + β3X3 + β4X4 + e.
+
+Note you may find it helpful to use the data.frame() function
+to create a single data set containing both X and Y .
+
+```{r}
+library(boot)
+Data = data.frame(x,y)
+set.seed(1)
+# i.
+glm.fit = glm(y~x)
+cv.glm(Data, glm.fit)$delta
+#[1] 7.288162 7.284744
+# ii.
+glm.fit = glm(y~poly(x,2))
+cv.glm(Data, glm.fit)$delta
+#[1] 0.9374236 0.9371789
+# iii.
+glm.fit = glm(y~poly(x,3))
+cv.glm(Data, glm.fit)$delta
+#[1] 0.9566218 0.9562538
+# iv.
+glm.fit = glm(y~poly(x,4))
+cv.glm(Data, glm.fit)$delta
+#[1] 0.9539049 0.9534453
+```
+
+(d) Repeat (c) using another random seed, and report your results.
+Are your results the same as what you got in (c)? Why?
+
+```{r}
+set.seed(10)
+# i.
+glm.fit = glm(y~x)
+cv.glm(Data, glm.fit)$delta
+#[1] 7.288162 7.284744
+# ii.
+glm.fit = glm(y~poly(x,2))
+cv.glm(Data, glm.fit)$delta
+# iii.
+glm.fit = glm(y~poly(x,3))
+cv.glm(Data, glm.fit)$delta
+#[1] 0.9566218 0.9562538
+# iv.
+glm.fit = glm(y~poly(x,4))
+cv.glm(Data, glm.fit)$delta
+#[1] 0.9539049 0.9534453
+#they are the same, because LOOCV will be the same since it evaluates n folds of a single observation.
+```
+
+(e) Which of the models in (c) had the smallest LOOCV error? Is
+this what you expected? Explain your answer.
+
+The quadratic polynomial had the lowest LOOCV test error rate. This was expected because it matches the true form of Y
+
+(f) Comment on the statistical significance of the coefficient estimates
+that results from fitting each of the models in (c) using
+least squares. Do these results agree with the conclusions drawn
+based on the cross-validation results?
+
+
+
+```{r}
+summary(glm.fit)
+#p-values show statistical significance of linear and quadratic terms, agrees with the CV result
+```
 
