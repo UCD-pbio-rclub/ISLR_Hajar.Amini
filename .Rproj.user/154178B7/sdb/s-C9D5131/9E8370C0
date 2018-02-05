@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"Chapter5_Feb_6\"\noutput: \n  html_document: \n    keep_md: yes\n---\n\n```{r setup, include=FALSE}\nknitr::opts_chunk$set(echo = TRUE)\n```\n#5.3.1\n\n```{r}\nlibrary (ISLR)\nset.seed (1)\ntrain=sample (392 ,196) #training set, subset 196 samples out of originoal 392 observations.1\n#?sample #Random Samples and Permutations\n```\n\n```{r}\nlm.fit <- lm(mpg~horsepower, data = Auto, subset = train)\nattach (Auto)\nmean((mpg -predict (lm.fit ,Auto))[-train ]^2) # mean() calculate the MSE of the 196 in the validation, -train means all observations that are not in the training set\n#MSE for the linear regression is 26.14 \n```\n\n#poly() function to estimate the test error for the quadratic and cubic regressions.\n```{r}\nlm.fit2=lm(mpg~poly(horsepower ,2) ,data=Auto ,subset =train )\nmean((mpg -predict (lm.fit2 ,Auto))[-train ]^2)\n#19.82\nlm.fit3=lm(mpg~poly(horsepower ,3) ,data=Auto ,subset =train )\nmean((mpg -predict (lm.fit3 ,Auto))[-train ]^2)\n#19.78\n```\n\n#If we choose a different training set instead, then we will obtain somewhat different errors on the validation set.\n\n```{r}\nset.seed (2)\ntrain=sample (392 ,196)\nlm.fit =lm(mpg~horsepower ,subset =train)\nmean((mpg -predict (lm.fit ,Auto))[-train ]^2)\n#23.30\nlm.fit2=lm(mpg~poly(horsepower ,2) ,data=Auto ,subset =train )\nmean((mpg -predict (lm.fit2 ,Auto))[-train ]^2)\n#18.90\nlm.fit3=lm(mpg~poly(horsepower ,3) ,data=Auto ,subset =train )\nmean((mpg -predict (lm.fit3 ,Auto))[-train ]^2)\n#19.26\n```\n\n#5.3.2\n\n```{r}\n#The LOOCV estimate can be automatically computed for any generalized linear model using the glm() and cv.glm() functions.\nglm.fit=glm(mpg~horsepower ,data=Auto)\ncoef(glm.fit)\n#(Intercept ) horsepower\n#39.936 -0.158\n\nlm.fit =lm(mpg~horsepower ,data=Auto)\ncoef(lm.fit)\n#(Intercept ) horsepower\n#39.936 -0.158\n#we will perform linear regression using the glm() function rather than the lm() function because the former can be used together with cv.glm(). \n```\n\n```{r}\nlibrary (boot) #The cv.glm() function is part of the boot library.\nglm.fit=glm(mpg~horsepower ,data=Auto)\ncv.err =cv.glm(Auto ,glm.fit) #This function calculates the estimated K-fold cross-validation prediction error for generalized linear models.\ncv.err$delta\n#1 1\n#24.23 24.23\n#The cv.glm() function produces a list with several components. The two numbers in the delta vector contain the cross-validation results.\n```\n\n```{r}\ncv.error=rep (0,5)\nfor (i in 1:5){\nglm.fit=glm(mpg~poly(horsepower ,i),data=Auto)\ncv.error[i]=cv.glm (Auto ,glm.fit)$delta [1]\n}\ncv.error\n#[1] 24.23 19.25 19.33 19.42 19.03\n```\n\n#5.3.3 k-Fold Cross-Validation\n\n```{r}\nset.seed (17)\ncv.error.10= rep (0 ,10)\nfor (i in 1:10) {\nglm.fit=glm(mpg~poly(horsepower ,i),data=Auto)\ncv.error.10[i]=cv.glm (Auto ,glm.fit ,K=10) $delta [1]\n}\ncv.error.10\n#[1] 24.21 19.19 19.31 19.34 18.88 19.02 18.90 19.71 18.95 19.50\n```\n\n\n",
+    "created" : 1517800588528.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3302357726",
+    "id" : "9E8370C0",
+    "lastKnownWriteTime" : 1517804595,
+    "last_content_update" : 1517804595067,
+    "path" : "~/Documents/UCD-pbio-rclub/ISLR_Hajar.Amini/Chapter5_Feb_6/Chapter5_Feb_6.Rmd",
+    "project_path" : "Chapter5_Feb_6/Chapter5_Feb_6.Rmd",
+    "properties" : {
+        "last_setup_crc32" : "36802260bb338d19",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
