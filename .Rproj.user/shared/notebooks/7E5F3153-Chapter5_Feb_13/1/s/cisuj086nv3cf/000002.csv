@@ -1,0 +1,30 @@
+"0","boot.fn = function(data, index) return(mean(data[index]))"
+"0","library(boot)"
+"0","bootstrap = boot(medv, boot.fn, 1000)"
+"0","bootstrap"
+"1","
+ORDINARY NONPARAMETRIC BOOTSTRAP
+
+"
+"1","
+Call:
+"
+"1","boot(data = medv, statistic = boot.fn, R = 1000)
+"
+"1","
+
+Bootstrap Statistics :
+"
+"1","   "
+"1"," original"
+"1","    bias  "
+"1","  std. error"
+"1","
+t1*"
+"1"," 22.53281"
+"1"," 0.0027583"
+"1","   0.4120131"
+"1","
+"
+"0","#0.4119374"
+"0","#Similar to answer from (b)(0.4119 vs 0.4089)"

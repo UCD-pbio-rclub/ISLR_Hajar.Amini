@@ -1,0 +1,3 @@
+"0","boot.fn = function(data, index)"
+"0","  return(coef(glm(default~income+balance, data=data, family=binomial,"
+"0","                  subset=index)))"

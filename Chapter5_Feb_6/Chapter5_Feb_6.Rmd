@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #5.3.1
 
 ```{r}
+#NOT use attach 
 library (ISLR)
 set.seed (1)
 train=sample (392 ,196) #training set, subset 196 samples out of originoal 392 observations.1
@@ -126,6 +127,7 @@ summary(Default)
 attach(Default)
 set.seed(1)
 glm.fit = glm(default~income+balance, data=Default, family=binomial)
+#use sample.split for spliting data Geoff scripts instead of subset=train
 ```
 
 (b) Using the validation set approach, estimate the test error of this

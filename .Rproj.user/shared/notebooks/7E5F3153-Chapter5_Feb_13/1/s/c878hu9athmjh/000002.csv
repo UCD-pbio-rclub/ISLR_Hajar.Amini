@@ -1,0 +1,6 @@
+"0","medv_err = sd(medv) / sqrt(length(medv))"
+"0","medv_err"
+"1","[1]"
+"1"," 0.4088611"
+"1","
+"
