@@ -64,6 +64,69 @@ summary (lm(mpg~horsepower +I(horsepower ^2) ,data=Auto))$coef
 
 #Probs
 
+2. We will now derive the probability that a given observation is part
+of a bootstrap sample. Suppose that we obtain a bootstrap sample
+from a set of n observations.
+
+(a) What is the probability that the first bootstrap observation is
+not the jth observation from the original sample? Justify your
+answer.
+1 - 1/n
+(b) What is the probability that the second bootstrap observation
+is not the jth observation from the original sample?
+1 - 1/n
+
+(c) Argue that the probability that the jth observation is not in the
+bootstrap sample is (1 − 1/n)n.
+we sample with replacement so each observation in the bootstrap sample has the same 1/n (independent) chance ofthe jth observation. So for a total of n observations gives us 
+(1 - 1/n)^n
+
+(d) When n = 5, what is the probability that the jth observation is
+in the bootstrap sample?
+1 - (1 - 1/5)^5 = 1 - (4/5)^5 = 67.2%
+
+(e) When n = 100, what is the probability that the jth observation
+is in the bootstrap sample?
+1 - (1 - 1/100)^{10} = 1 - (99/100)^{100} = 63.4%
+
+(f) When n = 10, 000, what is the probability that the jth observation
+is in the bootstrap sample?
+1 - (1 - 1/10000)^{10000} = 63.2%
+
+(g) Create a plot that displays, for each integer value of n from 1
+to 100, 000, the probability that the jth observation is in the
+bootstrap sample. Comment on what you observe.
+
+```{r}
+pr = function(n) return(1 - (1 - 1/n)^n)
+x = 1:100000
+plot(x, pr(x))
+#The plot in about 63.2%.
+```
+
+(h) We will now investigate numerically the probability that a bootstrap
+sample of size n = 100 contains the jth observation. Here
+j = 4. We repeatedly create bootstrap samples, and each time
+we record whether or not the fourth observation is contained in
+the bootstrap sample.
+```{r}
+store=rep (NA , 10000)
+for (i in 1:10000) {
+store[i]=sum(sample (1:100 , rep =TRUE)==4) >0
+}
+mean(store)
+```
+
+```{r}
+set.seed(1)
+store = rep(NA, 10000)
+for (i in 1:10000) {
+  store[i] = sum(sample(1:100, rep=T) == 4) > 0
+}
+mean(store)
+#The numerical results show an  mean probability of 64.1%, close to our theoretically result
+```
+
 4. Suppose that we use some statistical learning method to make a prediction
 for the response Y for a particular value of the predictor X.
 Carefully describe how we might estimate the standard deviation of
@@ -116,7 +179,7 @@ boot(Default, boot.fn, 50)
 
 (d) Comment on the estimated standard errors obtained using the
 glm() function and using your bootstrap function.
-Similar answers to the second and third significant digits.
+Similar answers
 
 9. We will now consider the Boston housing data set, from the MASS
 library.
