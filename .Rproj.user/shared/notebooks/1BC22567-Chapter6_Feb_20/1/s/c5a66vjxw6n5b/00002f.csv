@@ -1,0 +1,1 @@
+"0","plot(bwd.summary$adjr2, xlab=""Subset Size"", ylab=""Backward Adjusted R2"", pch=20, type=""l"")"

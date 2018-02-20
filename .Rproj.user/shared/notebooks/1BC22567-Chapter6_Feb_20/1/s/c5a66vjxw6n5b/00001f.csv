@@ -1,0 +1,1 @@
+"0","plot(bwd.summary$cp, xlab=""Subset Size"", ylab=""Backward Cp"", pch=20, type=""l"")"

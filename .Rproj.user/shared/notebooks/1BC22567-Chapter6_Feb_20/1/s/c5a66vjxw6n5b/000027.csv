@@ -1,0 +1,1 @@
+"0","plot(bwd.summary$bic, xlab=""Subset Size"", ylab=""Backward BIC"", pch=20, type=""l"")"

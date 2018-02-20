@@ -1,0 +1,4 @@
+"0","#see that all statistics pick 3 variable models except backward stepwise with adjusted R2. Here are the coefficients"
+"0","coefficients(mod.fwd, id=3)"
+"2","Error in coefficients(mod.fwd, id = 3) : object 'mod.fwd' not found
+"

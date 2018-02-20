@@ -1,0 +1,1 @@
+"0","plot(mode.summary$bic, xlab=""Subset degree"", ylab=""BIC"", pch=20, type=""l"")"

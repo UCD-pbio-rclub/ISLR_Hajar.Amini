@@ -1,3 +1,7 @@
-"0","library (ISLR)
-"
+"0","library (ISLR)"
 "2","package ‘ISLR’ was built under R version 3.4.2"
+"0","alpha.fn=function (data ,index){"
+"0","X=data$X [index]"
+"0","Y=data$Y [index]"
+"0","return ((var(Y)-cov (X,Y))/(var(X)+var(Y) -2* cov(X,Y)))"
+"0","}"

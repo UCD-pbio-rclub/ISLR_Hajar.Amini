@@ -1,0 +1,1 @@
+"0","plot(mode.summary$adjr2, xlab=""Subset degree"", ylab=""Adjusted R2"", pch=20, type=""l"")"

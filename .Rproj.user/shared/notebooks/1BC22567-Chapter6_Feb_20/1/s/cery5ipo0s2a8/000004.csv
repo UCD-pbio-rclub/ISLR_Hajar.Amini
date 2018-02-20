@@ -1,0 +1,4 @@
+"0","Y = β0 + β1 * X + β2 * X^2 + β3 * X^3 + e
+"
+"2","Error: object 'β0' not found
+"

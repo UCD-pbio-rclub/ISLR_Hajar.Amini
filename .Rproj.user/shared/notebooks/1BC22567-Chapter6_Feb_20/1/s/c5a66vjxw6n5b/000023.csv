@@ -1,0 +1,1 @@
+"0","plot(fwd.summary$bic, xlab=""Subset Size"", ylab=""Forward BIC"", pch=20, type=""l"")"
