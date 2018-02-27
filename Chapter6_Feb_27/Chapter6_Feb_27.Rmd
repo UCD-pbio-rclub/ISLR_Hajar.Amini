@@ -1,11 +1,15 @@
 ---
 title: "Chapter6_Feb_27"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+
 #problem
 
 3. Suppose we estimate the regression coefficients in a linear regression
@@ -137,7 +141,7 @@ bestlam = ridge.mod$lambda.min
 bestlam #8.11
 ridge.pred = predict(ridge.mod, newx=test, s=bestlam)
 mean((College.test[, "Apps"] - ridge.pred)^2)
-## [1] 1568252, Test RSS is slightly higher that OLS.
+## [1] 1568252, high?????
 
 ```
 
