@@ -74,7 +74,7 @@ As we increase lambda from zreo, all beta's decrease from their least square est
 and then eventually start increasing in a U shape: When lambda = 0, all beta s have their least square estimate values. In this case, the model tries to fit hard to training data and hence test RSS is high. As we increase lambda, beta s start reducing to zero and some of the overfitting is reduced. Thus, test RSS initially decreases. as beta s approach zero, test RSS increases.
 
 (c) Repeat (a) for variance.
-(iv) Steadily decreases: When $\lambda = 0$, the $\beta$ s have their least square estimate values. The actual estimates heavily depend on the training data and hence variance is high. As we increase $\lambda$, $\beta$ s start decreasing and model becomes simpler. In the limiting case of $\lambda$ approaching infinity, all $beta$ s reduce to zero and model predicts a constant and has no variance.
+(iv) Steadily decreases: When lambda = 0, the beta s have their least square estimate values. The actual estimates heavily depend on the training data and hence variance is high. As we increase lambda, $beta s start decreasing and model becomes simpler. In the limiting case of lambda approaching infinity, all beta s reduce to zero and model predicts a constant and has no variance.
 
 (d) Repeat (a) for (squared) bias.
 (iii) Steadily increases is correct: 
