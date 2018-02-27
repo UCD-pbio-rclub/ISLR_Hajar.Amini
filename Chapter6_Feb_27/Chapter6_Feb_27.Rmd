@@ -142,6 +142,6 @@ bestlam #8.11
 ridge.pred = predict(ridge.mod, newx=test, s=bestlam)
 mean((College.test[, "Apps"] - ridge.pred)^2)
 ## [1] 1568252, high?????
-
+# I need to change this
 ```
 
