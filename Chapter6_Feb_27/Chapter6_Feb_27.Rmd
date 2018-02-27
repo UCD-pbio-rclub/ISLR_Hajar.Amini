@@ -1,0 +1,143 @@
+---
+title: "Chapter6_Feb_27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#problem
+
+3. Suppose we estimate the regression coefficients in a linear regression
+model by minimizing
+
+for a particular value of s. For parts (a) through (e), indicate which
+of i. through v. is correct. Justify your answer.
+(a) As we increase s from 0, the training RSS will:
+i. Increase initially, and then eventually start decreasing in an
+inverted U shape.
+ii. Decrease initially, and then eventually start increasing in a
+U shape.
+iii. Steadily increase.
+iv. Steadily decrease.
+v. Remain constant.
+
+a
+(iv) Steadily decreases is correct: 
+My reason:
+As we increase s from 0, all beta 's increase from 0 to their least square estimate values. Training error for "0" beta s is the maximum and it steadily decreases to the ordinary Least Square RSS
+
+(b) Repeat (a) for test RSS.
+b
+(ii) Decrease initially is correct, 
+after decreasing initially then eventually start increasing in a U shape for this reason:
+When s = 0, all beta s are 0, the model has a high test RSS.
+As we increase s, beta s assume non-zero values and model starts fitting well on test data and so test RSS decreases.
+after overfitting to the training data, increasing test RSS.
+
+(c) Repeat (a) for variance.
+(iii) Steadily increase is correct: 
+When s = 0, the model effectively predicts a constant and has almost no variance. As we increase s, the models includes more beta s and their values start increasing. At this point, the beta s become highly dependent on training data, thus increasing the variance.
+
+(d) Repeat (a) for (squared) bias.
+(iv) Steadily decrease is correct:
+When s = 0, the model effectively predicts a constant and hence the prediction is far from actual value. Thus bias is high. As s increases, more beta s become non-zero and thus the model continues to fit training data better. And thus, bias decreases.
+
+(e) Repeat (a) for the irreducible error.
+(v) Remains constant is correct: By definition, 
+irreducible error is model independent and hence s is not inportant, in all situation remains constant.
+
+4. Suppose we estimate the regression coefficients in a linear regression
+model by minimizing
+
+for a particular value of λ. For parts (a) through (e), indicate which
+of i. through v. is correct. Justify your answer.
+(a) As we increase λ from 0, the training RSS will:
+i. Increase initially, and then eventually start decreasing in an
+inverted U shape.
+ii. Decrease initially, and then eventually start increasing in a
+U shape.
+iii. Steadily increase.
+iv. Steadily decrease.
+v. Remain constant.
+
+(a)
+(iii) Steadily increase is correct:
+As we increase lambda from zreo, all beta's decrease from their least square estimate values to zero. Training error is becoming the minimum and it steadily increases as beta s are reduced to zero.
+
+(b) Repeat (a) for test RSS.
+(ii) Decrease initially is correct,
+and then eventually start increasing in a U shape: When lambda = 0, all beta s have their least square estimate values. In this case, the model tries to fit hard to training data and hence test RSS is high. As we increase lambda, beta s start reducing to zero and some of the overfitting is reduced. Thus, test RSS initially decreases. as beta s approach zero, test RSS increases.
+
+(c) Repeat (a) for variance.
+(iv) Steadily decreases: When $\lambda = 0$, the $\beta$ s have their least square estimate values. The actual estimates heavily depend on the training data and hence variance is high. As we increase $\lambda$, $\beta$ s start decreasing and model becomes simpler. In the limiting case of $\lambda$ approaching infinity, all $beta$ s reduce to zero and model predicts a constant and has no variance.
+
+(d) Repeat (a) for (squared) bias.
+(iii) Steadily increases is correct: 
+When lambda = 0,beta s have their least-square estimate values and hence have the least bias. 
+As lambda increases, beta s start reducing towards zero, the model fits less. if limiting case of lambda is close to infinity, the model predicts a constant and hence bias is maximum.
+
+(e) Repeat (a) for the irreducible error.
+(v)Remains constant is correct:
+irreducible error is model independent so without considering lambda, remains constant.
+
+5. It is well-known that ridge regression tends to give similar coefficient
+values to correlated variables, whereas the lasso may give quite different
+coefficient values to correlated variables. We will now explore
+this property in a very simple setting.
+Suppose that n = 2, p = 2, x11 = x12, x21 = x22. Furthermore,
+suppose that y1+y2 = 0 and x11+x21 = 0 and x12+x22 = 0, so that
+the estimate for the intercept in a least squares, ridge regression, or
+lasso model is zero: ˆβ0 = 0.
+
+(a) Write out the ridge regression optimization problem in this setting.
+A general form of Ridge regression optimization looks like
+write in notebook
+
+(b) Argue that in this setting, the ridge coefficient estimates satisfy
+
+
+
+9. In this exercise, we will predict the number of applications received
+using the other variables in the College data set.
+(a) Split the data set into a training set and a test set.
+
+```{r}
+library(ISLR)
+set.seed(11)
+sum(is.na(College))
+train.size = dim(College)[1] / 2
+train = sample(1:dim(College)[1], train.size)
+test = -train
+College.train = College[train, ]
+College.test = College[test, ]
+```
+
+(b) Fit a linear model using least squares on the training set, and
+report the test error obtained.
+
+```{r}
+lm.fit = lm(Apps~., data=College.train) #fit on training data
+lm.predict = predict(lm.fit, College.test) #predict on test data
+mean((College.test[, "Apps"] - lm.predict)^2)
+## [1] 1538442
+#Test RSS is [1] 1538442
+```
+
+(c) Fit a ridge regression model on the training set, with λ chosen
+by cross-validation. Report the test error obtained.
+
+```{r}
+library(glmnet)
+train = model.matrix(Apps~., data=College.train)
+test = model.matrix(Apps~., data=College.test)
+grid = 10 ^ seq(4, -2, length=100)
+ridge.mod = cv.glmnet(train, College.train[, "Apps"], alpha=0, lambda=grid, thresh=1e-10) #By default, the function cv.glmnet() performs ten-fold cross-validation, though this can be changed using the argument nfolds
+bestlam = ridge.mod$lambda.min
+bestlam #8.11
+ridge.pred = predict(ridge.mod, newx=test, s=bestlam)
+mean((College.test[, "Apps"] - ridge.pred)^2)
+## [1] 1568252, Test RSS is slightly higher that OLS.
+
+```
+
